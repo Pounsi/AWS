@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <title>Vos Calendriers</title>
+    <link id="favicon" rel="icon" href="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fcalendrier.png?1523879418814" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fbootstrap.css?1523977461573">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fbootstrap.js?1523977638827"></script>
+    <script src="/fonction.js"></script>
+  </head>
+  
+  <body>
+    
+    <header>
+      
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/{{login}}/home">
+          <img src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fcalendrier.png?1523879418814" style="width: 120px;height: auto;"/>Mon Calendrier
+        </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto"></ul>
+          <form class="form-inline my-2 my-lg-0" onsubmit="return rechercher()" method="post">
+            <input class="form-control mr-sm-2" type="search" id="recherche" placeholder="Pseudo/Calendrier" required pattern="[a-zA-Z0-9-]+/[a-zA-Z0-9-]+" aria-label="Search">
+            <button class="btn btn-lg btn-outline-success my-4 my-sm-2" type="submit">Rechercher</button>
+          </form>
+          <div class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/{{login}}/favoris" style="font-size: 20px;margin-top:5px;float: right">Mes Favoris</a>
+              </li>  
+              <li class="nav-item">
+                <a href="/logout" class="btn btn-outline-danger btn-lg my-2 my-sm-0" role="button" >Deconnexion</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+    </header><br><br>
+      
+    <h2> Mes Calendriers : </h2><br><br>
+    <div class="container">
+      <div class="row">
+        {% for x in list %}
+          <div class="col-sm-4">
+            <div class="card text-black  mb-3" style="width: 20rem; height: 15rem">        
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-md-7">
+                    {{x.createur}}
+                  </div>
+                  <div class="col-md-2">
+                    <form method="post">
+                        <input type="hidden" name="titre" value="{{x.titre}}">
+                        <input type="hidden" name="createur" value="{{x.createur}}">
+                        <input type="hidden" name="supprimer" value="ok">
+                        <button type="submit" class="btn btn-danger" >Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body text-center">
+                <a href="/calendar/{{login}}/{{x.titre}}" class="btn" role="button">
+                  <h2 class="card-title">{{x.titre}}</h2>
+                  <h5> {{x.droit}}</h5>
+                </a>  
+              </div>    
+            </div>
+          </div>
+        {% endfor %}
+        
+      <!-- Button du modal -->
+          <div class="col-sm-4">
+            <div class="card text-black bg-success mb-3" style="width: 20rem; height: 15rem" data-toggle="modal" data-target="#exampleModal">
+              <div class="card-header">
+                Ajouter un calendrier
+              </div>
+              <div class="card-body">
+                <h2 class="card-title"></h2>
+                <div class="text-center">
+                  <button type="button" class="btn btn-outline-success">
+                    <img src="https://icon-icons.com/icons2/789/PNG/512/add-1_icon-icons.com_65127.png" height="80" width="80" class="rounded" alt="plus">
+                  </button>
+                </div> 
+              </div>
+            </div>
+          </div>    
+        </div>
+      </div>
+    
+    
+      <!-- Modal ajout de calendrier -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Ajouter un calendrier</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form method="post" action="" >
+              <div class="modal-body">
+                <div class="form-group row">
+                  <label class="col-sm-2 col-form-label">Titre</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" name="titre" placeholder="Titre" pattern="[a-zA-Z0-9-]+" required>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-10">
+                    <input type="hidden" class="form-control" name="createur"  placeholder="Créateur" value="{{login}}" required>
+                  </div>
+                </div>
+                <fieldset class="form-group">
+                  <div class="row">
+                    <legend class="col-form-label col-sm-2 pt-0">Droit</legend>
+                    <div class="col-sm-10">
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio1" name="droit" value="prive" class="custom-control-input">
+                        <label class="custom-control-label" for="customRadio1">Privé</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio2" name="droit" class="custom-control-input" value="public" checked>
+                        <label class="custom-control-label" for="customRadio2">Public</label>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="submit" class="btn btn-primary">Valider</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    
+    </body>
+  
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calendrier</title>
+    <link id="favicon" rel="icon" href="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fcalendrier.png?1523879418814" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fbootstrap.css?1523977461573">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fbootstrap.js?1523977638827"></script>
+    <script src="/fonction.js"></script>
+    <script type="text/javascript">
+      
+          malistetitre = [];
+          malisteduree = [];
+          malistehd = [];
+          malistedescription = [];
+          malistedate = [];
+          malisteid = [];
+          {% for event in list %}
+               malistetitre.push("{{event.titre}}");
+               malisteduree.push("{{event.duree}}");
+               malistehd.push("{{event.heuredebut}}");
+               malistedescription.push("{{event.description}}");
+               malistedate.push("{{event.datedebut}}");
+               malisteid.push("{{event.id}}");
+           {% endfor %} 
+    </script>
+  </head>
+          
+  <body onload="DateCourante('{{date}}'); chargerEvents(malistetitre,malisteduree,malistehd);">
+    <!-- HEADER -->
+    <header>
+      
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/{{login}}/home">
+          <img src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2Fcalendrier.png?1523879418814" style="width: 120px;height: auto;"/>
+              Mon Calendrier
+        </a>
+        {% if login != 'invite' %} 
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto"></ul>
+          <div class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav">
+               <li class="nav-item">
+                <a class="nav-link" href="/{{login}}/home" style="font-size: 20px;margin-top:5px;float: right">Mes Calendrier</a>
+                <a class="nav-link" href="/{{login}}/favoris" style="font-size: 20px;margin-top:5px;float: right">Mes Favoris</a>
+               </li>  
+              <li class="nav-item">
+              <a href="/logout" class="btn btn-outline-danger btn-lg my-2 my-sm-0" role="button" >Deconnexion</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+      </nav>
+      
+    </header>
+    <!-- FIN HEADER -->
+    
+    <br><br>
+    <div class="container">
+      <div class="row">
+        
+        <!-- BOUTTON DROIT -->
+        <div class="col-md-1" >
+          <div id="toggles">
+            <script type="text/javascript">
+              var cal = "{{calendrier}}"
+              droit = "{{prive}}";
+              var login = "{{login}}";
+              var createur = "{{createur}}"
+              
+              if (login == createur){
+                if (droit == "true"){
+                  document.write('<input type="checkbox" onclick="changerdroit(cal,droit,createur);" name="checkbox1" id="checkbox1" class="ios-toggle" />')
+                }else {
+                  document.write('<input type="checkbox" onclick="changerdroit(cal,droit,createur);" name="checkbox1" id="checkbox1" class="ios-toggle" checked/>');
+                }
+                  document.write('<label for="checkbox1" class="checkbox-label" data-off="Prive" data-on="Public"></label>');
+              }
+              
+            </script>
+          </div>
+        </div>
+        
+        
+        <!-- AFFICHAGE DATE -->
+        <div class="col-md-9">
+           <div class="form-group row">
+             <div class="col-sm-4"></div>
+             <div class="col-sm-7">
+                <div class="" id="Date"></div>
+              </div>
+          </div>
+             
+          <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-9">
+              <form id="FormInput" method="post">
+                <input class="form-control" type="date" name="date_event" id="date-input" onchange="ModifDate()">
+              </form>
+            </div>
+          </div>
+             
+        </div>
+        
+        <!-- BOUTTON FAVORIS -->
+        {% if login != 'invite' %} 
+          <div class="col-md-1">
+            <button type="button" id="boutonfavoris" onclick="addfavoris();" class="btn btn-outline-light">
+            {% if favoris %} 
+              <img id="fav2" src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2FfavorisOFF.jpg?1524500623946" height="80" width="auto" class="rounded2">
+            {% else %}
+              <img id="fav1" src="https://cdn.glitch.com/daada4c4-0d06-4980-9c23-29b284fa7e28%2FfavorisON.jpg?1524500621594" height="80" width="auto" class="rounded">
+            {% endif %}
+            </button>
+          </div>
+        {% endif %} 
+        
+    </div>       <!-- FIN ROW -->
+  </div>      <!-- FIN CONTAINER -->
+    
+    <br>
+    
+    <div class="container" >
+      <div class="row">
+        
+              <!-- ESPACE -->
+        <div class="col-md-1"></div>
+        
+              <!-- JOUR PRECEDENT -->
+        <div class="col-md-2">
+          <div class="sticky-top"><br><br>
+            <div class="card text-black bg-light mb-3" style="width: 10rem; height: 15rem" >
+              <div class="card-header">Jour précedent</div>
+              <div class="card-body">
+                <h2 class="card-title"></h2>
+                <div class="text-center">
+           
+                    <button type="button"  onclick="JourPrec()" class="btn btn-outline-light">
+                      <img src="https://image.flaticon.com/icons/svg/17/17264.svg" height="80" width="80" class="rounded" alt="plus">
+                    </button>
+                 
+                  </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+        
+              <!-- AFFICHAGE EVENEMENT -->
+        <div class="col-md-6 ">
+          <div id="DIV">
+            Activez JavaScript.
+            <script src="server.js"></script>
+          </div>
+        </div>
+        
+              <!-- JOUR SUIVANT -->
+        <div class="col-md-2">
+          <div class="sticky-top"> <br><br>
+            <div class="card text-black bg-light mb-3" style="width: 10rem; height: 15rem" >
+              <div class="card-header">Jour suivant</div>
+              <div class="card-body">
+                <h2 class="card-title"></h2>
+                <div class="text-center">
+                  
+                    
+                    <button type="button" onclick="JourSuivant()" class="btn btn-outline-light">
+                      <img src="https://image.flaticon.com/icons/svg/17/17944.svg" height="80" width="80" class="rounded" alt="plus">
+                    </button>
+                
+                  </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>      <!-- FIN ROW -->
+    </div>      <!-- FIN CONTAINER -->
+    
+    
+    
+      {% for i in entier %}
+          <!-- MODAL INSERER -->
+    <div class="modal fade" id="exampleModal{{i}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          
+                <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Evenement</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          
+                <!-- MODAL BODY -->
+          <form method="post" action="" >
+            <div class="modal-body">
+              
+                    <!-- TITRE -->
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Titre</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="titre" id="titre{{i}}" pattern="[a-zA-Z0-9-]+" placeholder="Titre de l'évenement" maxlength="35" required>
+                </div>
+              </div>
+                    <!-- Calendrier -->
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Calendrier</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="calendrier" id="calendrier{{i}}" placeholder="Calendrier" value="{{calendrier}}" readonly>
+                </div>
+              </div>
+                    <!-- DERSCRIPTION -->
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Description</label>
+                <div id="madivision{{i}}" class="col-sm-10">
+                  <textarea type="textarea" rows="4" cols="50" class="form-control" name="description" id="description{{i}}" placeholder="Description" required></textarea>
+                </div>
+              </div>
+              
+              <div id="datemodifier{{i}}" class="form-group row">
+              </div>
+              <div id="madivision2{{i}}" class="form-group row">
+                
+                </div>
+              
+                    <!-- HEURE -->
+              <div id="heure{{i}}" class="form-group row">
+                <label class="col-sm-2 col-form-label" required>Heure</label>
+                <div  class="col-sm-10">
+                  <script langage="javascript">
+                      var j = {{i}};
+                      var duree = j*30;
+                      var minutes = duree % 60;
+                      var heures = (duree - minutes)/60;
+                      if(heures<10) heures = '0'+heures;
+                      if(minutes<10) minutes+='0';
+                      document.write('<input type="text" class="form-control"  value="'+heures+"h"+minutes+'" readonly>');
+                  </script>
+                </div>
+              </div>
+                    <!-- DUREE -->
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Durée</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="duree" id="duree{{i}}" placeholder="Nombre de créneaux (30min)" required>
+                </div>
+              </div>
+                    <!-- HIDDEN -->
+              <input type="hidden" name="createur"  id="login" value="{{login}}">
+              <input type="hidden" name="createur"  id="createur{{i}}" value="{{createur}}">
+              <input type="hidden"  id="prive" value="{{prive}}">
+               <input type="hidden"  name="datedebut" id="date{{i}}"  placeholder="date debut">
+              <input type="hidden"  name="heuredebut" id="HD{{i}}"  value="{{i}}">
+              
+            </div>
+    
+        <!-- MODAL FOOTER -->
+          <div class="modal-footer" id="modalfooter{{i}}">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            <button type="button" class="btn btn-success ajouter{{i}}" ligne="{{i}}" >Ajouter evenement</button>
+          </div>
+          </form>
+
+        </div>
+      </div>
+    </div>       <!-- FIN MODAL INSERER -->
+        
+    {% endfor %}
+    
+  </body>
+</html>
